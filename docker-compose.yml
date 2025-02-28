@@ -1,0 +1,49 @@
+version: '3'
+
+services:
+  biblio:
+    build: ./biblio
+    ports:
+      - "8080:80"
+    volumes:
+      - ./biblio:/var/www/html
+    depends_on:
+      - mysql
+
+  esport-api:
+    build: ./esport-api
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./esport-api:/app
+    depends_on:
+      - mongodb
+
+  esport-front:
+    build: ./esport-front
+    ports:
+      - "8081:80"
+    depends_on:
+      - esport-api
+
+  mysql:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: biblio_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+
+  mongodb:
+    image: mongo:latest
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
